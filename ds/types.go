@@ -20,76 +20,124 @@ type Comparable interface {
 	Integer | Float | ~string
 }
 
-type TreeNode[K Comparable, V any] interface {
-	Key() K
-	Value() V
-	Height() int
-	Left() *TreeNode[K, V]
-	Right() *TreeNode[K, V]
-	Parent() *TreeNode[K, V]
+type TreeNode[K Comparable] interface {
+	GetKey() K
+	SetKey(key K)
+	GetHeight() int
+	SetHeight(height int)
+	GetLeft() TreeNode[K]
+	SetLeft(node TreeNode[K])
+	GetRight() TreeNode[K]
+	SetRight(node TreeNode[K])
+	GetParent() TreeNode[K]
+	SetParent(node TreeNode[K])
 }
 
 type KeyNode[K Comparable] struct {
-	height int
 	key    K
-	left   *KeyNode[K]
-	right  *KeyNode[K]
-	parent *KeyNode[K]
+	height int
+	left   TreeNode[K]
+	right  TreeNode[K]
+	parent TreeNode[K]
 }
 
-func (node *KeyNode[K]) Height() int {
+func (node *KeyNode[K]) GetKey() K {
+	return node.key
+}
+
+func (node *KeyNode[K]) SetKey(key K) {
+	node.key = key
+}
+
+func (node *KeyNode[K]) GetValue() any {
+	return node.key
+}
+
+func (node *KeyNode[K]) SetValue(_ any) {
+	return
+}
+
+func (node *KeyNode[K]) GetHeight() int {
 	return node.height
 }
 
-func (node *KeyNode[K]) Key() K {
-	return node.key
+func (node *KeyNode[K]) SetHeight(height int) {
+	node.height = height
 }
 
-func (node *KeyNode[K]) Value() K {
-	return node.key
-}
-
-func (node *KeyNode[K]) Left() *KeyNode[K] {
+func (node *KeyNode[K]) GetLeft() TreeNode[K] {
 	return node.left
 }
 
-func (node *KeyNode[K]) Right() *KeyNode[K] {
+func (node *KeyNode[K]) SetLeft(left TreeNode[K]) {
+	node.left = left
+}
+
+func (node *KeyNode[K]) GetRight() TreeNode[K] {
 	return node.right
 }
 
-func (node *KeyNode[K]) Parent() *KeyNode[K] {
+func (node *KeyNode[K]) SetRight(right TreeNode[K]) {
+	node.right = right
+}
+
+func (node *KeyNode[K]) GetParent() TreeNode[K] {
 	return node.parent
+}
+
+func (node *KeyNode[K]) SetParent(parent TreeNode[K]) {
+	node.parent = parent
 }
 
 type KeyValueNode[K Comparable, V any] struct {
-	height int
-	key    K
-	value  V
-	left   *KeyValueNode[K, V]
-	right  *KeyValueNode[K, V]
-	parent *KeyValueNode[K, V]
+	KeyNode[K]
+	value V
 }
 
-func (node *KeyValueNode[K, V]) Height() int {
-	return node.height
-}
-
-func (node *KeyValueNode[K, V]) Key() K {
+func (node *KeyValueNode[K, V]) GetKey() K {
 	return node.key
 }
 
-func (node *KeyValueNode[K, V]) Value() V {
+func (node *KeyValueNode[K, V]) SetKey(key K) {
+	node.key = key
+}
+
+func (node *KeyValueNode[K, V]) GetValue() V {
 	return node.value
 }
 
-func (node *KeyValueNode[K, V]) Left() *KeyValueNode[K, V] {
+func (node *KeyValueNode[K, V]) SetValue(value V) {
+	node.value = value
+}
+
+func (node *KeyValueNode[K, V]) GetHeight() int {
+	return node.height
+}
+
+func (node *KeyValueNode[K, V]) SetHeight(height int) {
+	node.height = height
+}
+
+func (node *KeyValueNode[K, V]) GetLeft() TreeNode[K] {
 	return node.left
 }
 
-func (node *KeyValueNode[K, V]) Right() *KeyValueNode[K, V] {
+func (node *KeyValueNode[K, V]) SetLeft(left TreeNode[K]) {
+	node.left = left
+}
+
+func (node *KeyValueNode[K, V]) GetRight() TreeNode[K] {
 	return node.right
 }
 
-func (node *KeyValueNode[K, V]) Parent() *KeyValueNode[K, V] {
+func (node *KeyValueNode[K, V]) SetRight(right TreeNode[K]) {
+	node.right = right
+}
+
+func (node *KeyValueNode[K, V]) GetParent() TreeNode[K] {
 	return node.parent
+}
+
+func (node *KeyValueNode[K, V]) SetParent(parent TreeNode[K]) {
+	node.parent = parent
 }

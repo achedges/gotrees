@@ -10,26 +10,26 @@ const listSize uint32 = 10
 
 var keys = [listSize]int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
 
-func listSizeTestHelper[K ds.Comparable](test *testing.T, tree *ds.TreeSet[K]) {
+func listSizeTestHelper[K ds.Comparable](test *testing.T, tree *ds.Tree[K]) {
 	if tree.Size != listSize {
 		test.Errorf("Unexpected tree size: %d", tree.Size)
 		test.FailNow()
 	}
 }
 
-func minMaxTestHelper[K ds.Comparable](test *testing.T, tree *ds.TreeSet[K], expMin K, expMax K) {
-	if tree.Min().Key != expMin {
-		test.Errorf("Unexpected tree minimum: %d", any(tree.Min().Key).(int))
+func minMaxTestHelper[K ds.Comparable](test *testing.T, tree *ds.Tree[K], expMin K, expMax K) {
+	if tree.Min().GetKey() != expMin {
+		test.Errorf("Unexpected tree minimum: %d", any(tree.Min().GetKey()).(int))
 		test.FailNow()
 	}
-	if tree.Max().Key != expMax {
-		test.Errorf("Unexpected tree maximum %d", any(tree.Max().Key).(int))
+	if tree.Max().GetKey() != expMax {
+		test.Errorf("Unexpected tree maximum %d", any(tree.Max().GetKey()).(int))
 		test.FailNow()
 	}
 }
 
-func nodeBoundariesTestHelper[K ds.Comparable](test *testing.T, tree *ds.TreeSet[K]) {
-	if tree.Root.Parent != nil {
+func nodeBoundariesTestHelper[K ds.Comparable](test *testing.T, tree *ds.Tree[K]) {
+	if tree.Root.GetParent() != nil {
 		test.Error("Invalid parent node on tree root")
 		test.FailNow()
 	}
@@ -43,7 +43,7 @@ func nodeBoundariesTestHelper[K ds.Comparable](test *testing.T, tree *ds.TreeSet
 	}
 }
 
-func nextNodesTestHelper[K ds.Comparable](test *testing.T, tree *ds.TreeSet[K]) {
+func nextNodesTestHelper[K ds.Comparable](test *testing.T, tree *ds.Tree[K]) {
 	var cur = tree.Min()
 	var nex = tree.Next(cur)
 	if nex == nil {
@@ -52,8 +52,8 @@ func nextNodesTestHelper[K ds.Comparable](test *testing.T, tree *ds.TreeSet[K]) 
 	}
 
 	for nex != nil {
-		exp := any(cur.Key).(int) + 1
-		if any(nex.Key).(int) != exp {
+		exp := any(cur.GetKey()).(int) + 1
+		if any(nex.GetKey()).(int) != exp {
 			test.Error("Incorrect next key")
 			test.FailNow()
 		}
@@ -62,7 +62,7 @@ func nextNodesTestHelper[K ds.Comparable](test *testing.T, tree *ds.TreeSet[K]) 
 	}
 }
 
-func previousNodesTestHelper[K ds.Comparable](test *testing.T, tree *ds.TreeSet[K]) {
+func previousNodesTestHelper[K ds.Comparable](test *testing.T, tree *ds.Tree[K]) {
 	var cur = tree.Max()
 	var pre = tree.Prev(cur)
 	if pre == nil {
@@ -71,8 +71,8 @@ func previousNodesTestHelper[K ds.Comparable](test *testing.T, tree *ds.TreeSet[
 	}
 
 	for pre != nil {
-		exp := any(cur.Key).(int) - 1
-		if any(pre.Key).(int) != exp {
+		exp := any(cur.GetKey()).(int) - 1
+		if any(pre.GetKey()).(int) != exp {
 			test.Error("Incorrect previous key")
 			test.FailNow()
 		}
@@ -81,7 +81,7 @@ func previousNodesTestHelper[K ds.Comparable](test *testing.T, tree *ds.TreeSet[
 	}
 }
 
-func traversalTestHelper[K ds.Comparable](test *testing.T, tree *ds.TreeSet[K], preOrderKeys []K, postOrderKeys []K, bfsKeys []K) {
+func traversalTestHelper[K ds.Comparable](test *testing.T, tree *ds.Tree[K], preOrderKeys []K, postOrderKeys []K, bfsKeys []K) {
 	var i uint32 = 0
 	var treeKeys = tree.GetKeys(ds.TreeWalkInOrder)
 
@@ -127,9 +127,9 @@ func traversalTestHelper[K ds.Comparable](test *testing.T, tree *ds.TreeSet[K], 
 	}
 }
 
-func findTestHelper[K ds.Comparable](test *testing.T, tree *ds.TreeSet[K], testKeys []K) {
+func findTestHelper[K ds.Comparable](test *testing.T, tree *ds.Tree[K], testKeys []K) {
 	for _, v := range testKeys {
-		val := tree.Find(v).Key
+		val := tree.Find(v).GetKey()
 		if val != v {
 			test.Errorf("Incorrect value found: %s", fmt.Sprint(val))
 			test.FailNow()

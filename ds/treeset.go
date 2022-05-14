@@ -7,48 +7,35 @@ const (
 	TreeWalkBFS       = iota
 )
 
-type Node[K Comparable] struct {
-	height int
-	Key    K
-	Left   *Node[K]
-	Right  *Node[K]
-	Parent *Node[K]
-}
-
 // AVL tree implementation
 
-type TreeSet[K Comparable] struct {
+type Tree[K Comparable] struct {
 	Size uint32
-	Root *Node[K]
+	Root TreeNode[K]
 }
 
-func NewTreeSet[K Comparable]() *TreeSet[K] {
-	return &TreeSet[K]{
+func NewTree[K Comparable]() *Tree[K] {
+	return &Tree[K]{
 		Size: 0,
 		Root: nil,
 	}
 }
 
-func (node *Node[K]) copyTo(target *Node[K]) {
-	target.Key = node.Key
-}
-
-func (node *Node[K]) getMaxSubtreeHeight() int {
+func getMaxSubtreeHeight[K Comparable](node TreeNode[K]) int {
 	lh := 0
 	rh := 0
-
-	if node.Left != nil {
-		lh = node.Left.height
+	if node.GetLeft() != nil {
+		lh = node.GetLeft().GetHeight()
 	}
 
-	if node.Right != nil {
-		rh = node.Right.height
+	if node.GetRight() != nil {
+		rh = node.GetRight().GetHeight()
 	}
 
 	return Max(lh, rh)
 }
 
-func (node *Node[K]) getSubtreeBalance() int {
+func getSubtreeBalance[K Comparable](node TreeNode[K]) int {
 	if node == nil {
 		return 0
 	}
@@ -56,230 +43,220 @@ func (node *Node[K]) getSubtreeBalance() int {
 	lh := 0
 	rh := 0
 
-	if node.Left != nil {
-		lh = node.Left.height
+	if node.GetLeft() != nil {
+		lh = node.GetLeft().GetHeight()
 	}
 
-	if node.Right != nil {
-		rh = node.Right.height
+	if node.GetRight() != nil {
+		rh = node.GetRight().GetHeight()
 	}
 
 	return lh - rh
 }
 
-func (node *Node[K]) getSubtreeMin() *Node[K] {
+func getSubtreeMin[K Comparable](node TreeNode[K]) TreeNode[K] {
 	n := node
-	for n.Left != nil {
-		n = n.Left
+	for n.GetLeft() != nil {
+		n = n.GetLeft()
 	}
 	return n
 }
 
-func (node *Node[K]) getSubtreeMax() *Node[K] {
+func getSubtreeMax[K Comparable](node TreeNode[K]) TreeNode[K] {
 	n := node
-	for n.Right != nil {
-		n = n.Right
+	for n.GetRight() != nil {
+		n = n.GetRight()
 	}
 	return n
 }
 
-func getSubtreeBalance[K Comparable](node *Node[K]) int {
-	if node == nil {
-		return 0
-	} else {
-		var lh = 0
-		var rh = 0
-		if node.Left != nil {
-			lh = node.Left.height
-		}
-		if node.Right != nil {
-			rh = node.Right.height
-		}
-		return lh - rh
-	}
-}
-
-func (tree *TreeSet[K]) walkKeys(n *Node[K], elements []K, order int) []K {
+func (tree *Tree[K]) walkKeys(n TreeNode[K], elements []K, order int) []K {
 	if order == TreeWalkInOrder {
-		if n.Left != nil {
-			elements = tree.walkKeys(n.Left, elements, order)
+		if n.GetLeft() != nil {
+			elements = tree.walkKeys(n.GetLeft(), elements, order)
 		}
-		elements = append(elements, n.Key)
-		if n.Right != nil {
-			elements = tree.walkKeys(n.Right, elements, order)
+		elements = append(elements, n.GetKey())
+		if n.GetRight() != nil {
+			elements = tree.walkKeys(n.GetRight(), elements, order)
 		}
 	} else if order == TreeWalkPreOrder {
-		elements = append(elements, n.Key)
-		if n.Left != nil {
-			elements = tree.walkKeys(n.Left, elements, order)
+		elements = append(elements, n.GetKey())
+		if n.GetLeft() != nil {
+			elements = tree.walkKeys(n.GetLeft(), elements, order)
 		}
-		if n.Right != nil {
-			elements = tree.walkKeys(n.Right, elements, order)
+		if n.GetRight() != nil {
+			elements = tree.walkKeys(n.GetRight(), elements, order)
 		}
 	} else if order == TreeWalkPostOrder {
-		if n.Left != nil {
-			elements = tree.walkKeys(n.Left, elements, order)
+		if n.GetLeft() != nil {
+			elements = tree.walkKeys(n.GetLeft(), elements, order)
 		}
-		if n.Right != nil {
-			elements = tree.walkKeys(n.Right, elements, order)
+		if n.GetRight() != nil {
+			elements = tree.walkKeys(n.GetRight(), elements, order)
 		}
-		elements = append(elements, n.Key)
+		elements = append(elements, n.GetKey())
 	}
 
 	return elements
 }
 
-func (tree *TreeSet[K]) Next(n *Node[K]) *Node[K] {
-	if n.Right != nil {
-		return n.Right.getSubtreeMin()
+func (tree *Tree[K]) Next(n TreeNode[K]) TreeNode[K] {
+	if n.GetRight() != nil {
+		return getSubtreeMin(n.GetRight())
 	}
 
-	parent := n.Parent
-	for parent != nil && parent.Right != nil && n.Key == parent.Right.Key {
+	parent := n.GetParent()
+	for parent != nil && parent.GetRight() != nil && n.GetKey() == parent.GetRight().GetKey() {
 		n = parent
-		parent = parent.Parent
+		parent = parent.GetParent()
 	}
 
 	return parent
 }
 
-func (tree *TreeSet[K]) Prev(n *Node[K]) *Node[K] {
-	if n.Left != nil {
-		return n.Left.getSubtreeMax()
+func (tree *Tree[K]) Prev(n TreeNode[K]) TreeNode[K] {
+	if n.GetLeft() != nil {
+		return getSubtreeMax(n.GetLeft())
 	}
 
-	parent := n.Parent
-	for parent != nil && parent.Left != nil && n.Key == parent.Left.Key {
+	parent := n.GetParent()
+	for parent != nil && parent.GetLeft() != nil && n.GetKey() == parent.GetLeft().GetKey() {
 		n = parent
-		parent = parent.Parent
+		parent = parent.GetParent()
 	}
 
 	return parent
 }
 
-func (tree *TreeSet[K]) Min() *Node[K] {
+func (tree *Tree[K]) Min() TreeNode[K] {
 	if tree.Root == nil {
 		return nil
 	}
-
-	return tree.Root.getSubtreeMin()
+	return getSubtreeMin(tree.Root)
 }
 
-func (tree *TreeSet[K]) Max() *Node[K] {
+func (tree *Tree[K]) Max() TreeNode[K] {
 	if tree.Root == nil {
 		return nil
 	}
-
-	return tree.Root.getSubtreeMax()
+	return getSubtreeMax(tree.Root)
 }
 
-func (node *Node[K]) rotateLeft() *Node[K] {
-	newroot := node.Right
-	tmp := newroot.Left
-	newroot.Left = node
-	node.Right = tmp
+func rotateLeft[K Comparable](node TreeNode[K]) TreeNode[K] {
+	newroot := node.GetRight()
+	tmp := newroot.GetLeft()
+	newroot.SetLeft(node)
+	node.SetRight(tmp)
 
 	if tmp != nil {
-		tmp.Parent = node
+		tmp.SetParent(node)
 	}
 
-	node.height = node.getMaxSubtreeHeight() + 1
-	newroot.height = newroot.getMaxSubtreeHeight() + 1
+	node.SetHeight(getMaxSubtreeHeight(node) + 1)
+	newroot.SetHeight(getMaxSubtreeHeight(newroot) + 1)
 	return newroot
 }
 
-func (node *Node[K]) rotateRight() *Node[K] {
-	newroot := node.Left
-	tmp := newroot.Right
-	newroot.Right = node
-	node.Left = tmp
+func rotateRight[K Comparable](node TreeNode[K]) TreeNode[K] {
+	newroot := node.GetLeft()
+	tmp := newroot.GetRight()
+	newroot.SetRight(node)
+	node.SetLeft(tmp)
 
 	if tmp != nil {
-		tmp.Parent = node
+		tmp.SetParent(node)
 	}
 
-	node.height = node.getMaxSubtreeHeight() + 1
-	newroot.height = newroot.getMaxSubtreeHeight() + 1
+	node.SetHeight(getMaxSubtreeHeight(node) + 1)
+	newroot.SetHeight(getMaxSubtreeHeight(newroot) + 1)
 	return newroot
 }
 
-func (tree *TreeSet[K]) insertNode(root *Node[K], node *Node[K]) *Node[K] {
+func replaceNode[K Comparable](old TreeNode[K], new TreeNode[K]) {
+	old.SetKey(new.GetKey())
+	old.SetHeight(new.GetHeight())
+	old.SetLeft(new.GetLeft())
+	old.SetRight(new.GetRight())
+	old.SetParent(new.GetParent())
+}
+
+func (tree *Tree[K]) insertNode(root TreeNode[K], node TreeNode[K]) TreeNode[K] {
 	if root == nil {
 		root = node
 		tree.Size += 1
 		return root
 	}
 
-	if node.Key < root.Key {
-		root.Left = tree.insertNode(root.Left, node)
-		root.Left.Parent = root
-	} else if node.Key > root.Key {
-		root.Right = tree.insertNode(root.Right, node)
-		root.Right.Parent = root
+	if node.GetKey() < root.GetKey() {
+		root.SetLeft(tree.insertNode(root.GetLeft(), node))
+		root.GetLeft().SetParent(root)
+	} else if node.GetKey() > root.GetKey() {
+		root.SetRight(tree.insertNode(root.GetRight(), node))
+		root.GetRight().SetParent(root)
 	} else {
-		node.copyTo(root) // replace if Key found
+		replaceNode(root, node)
 	}
 
 	var lheight = 0
 	var rheight = 0
 
-	if root.Left != nil {
-		lheight = root.Left.height
+	if root.GetLeft() != nil {
+		lheight = root.GetLeft().GetHeight()
 	}
-	if root.Right != nil {
-		rheight = root.Right.height
+	if root.GetRight() != nil {
+		rheight = root.GetRight().GetHeight()
 	}
 
-	root.height = Max(lheight, rheight) + 1
+	root.SetHeight(Max(lheight, rheight) + 1)
 	balance := lheight - rheight
 
-	if balance > 1 && node.Key < root.Left.Key {
-		root = root.rotateRight()
-	} else if balance < -1 && node.Key > root.Right.Key {
-		root = root.rotateLeft()
-	} else if balance > 1 && node.Key > root.Left.Key {
-		root.Left = root.Left.rotateLeft()
-		root = root.rotateRight()
-	} else if balance < -1 && node.Key < root.Right.Key {
-		root.Right = root.Right.rotateRight()
-		root = root.rotateLeft()
+	if balance > 1 && node.GetKey() < root.GetLeft().GetKey() {
+		root = rotateRight(root)
+	} else if balance < -1 && node.GetKey() > root.GetRight().GetKey() {
+		root = rotateLeft(root)
+	} else if balance > 1 && node.GetKey() > root.GetLeft().GetKey() {
+		root.SetLeft(rotateLeft(root.GetLeft()))
+		root = rotateRight(root)
+	} else if balance < -1 && node.GetKey() < root.GetRight().GetKey() {
+		root.SetRight(rotateRight(root.GetRight()))
+		root = rotateLeft(root)
 	}
 
-	if root.Left != nil {
-		root.Left.Parent = root
+	if root.GetLeft() != nil {
+		root.GetLeft().SetParent(root)
 	}
 
-	if root.Right != nil {
-		root.Right.Parent = root
+	if root.GetRight() != nil {
+		root.GetRight().SetParent(root)
 	}
 
 	return root
 }
 
-func (tree *TreeSet[K]) deleteNode(root *Node[K], node *Node[K]) *Node[K] {
+func (tree *Tree[K]) deleteNode(root TreeNode[K], node TreeNode[K]) TreeNode[K] {
 	if root == nil {
 		return root
 	}
 
-	if node.Key < root.Key {
-		root.Left = tree.deleteNode(root.Left, node)
-	} else if node.Key > root.Key {
-		root.Right = tree.deleteNode(root.Right, node)
+	if node.GetKey() < root.GetKey() {
+		root.SetLeft(tree.deleteNode(root.GetLeft(), node))
+	} else if node.GetKey() > root.GetKey() {
+		root.SetRight(tree.deleteNode(root.GetRight(), node))
 	} else {
-		if root.Left == nil || root.Right == nil {
-			var tmp *Node[K]
-			if root.Left == nil {
-				tmp = root.Right
+		if root.GetLeft() == nil || root.GetRight() == nil {
+			var tmp TreeNode[K]
+			if root.GetLeft() == nil {
+				tmp = root.GetRight()
 			} else {
-				tmp = root.Left
+				tmp = root.GetLeft()
 			}
 
 			if tmp != nil {
 				root = tmp
 			}
 		} else {
-			root.Left.getSubtreeMax().copyTo(root)
-			root.Left = tree.deleteNode(root.Left, root)
+			replaceNode(root, getSubtreeMax(root.GetLeft()))
+			root.SetLeft(tree.deleteNode(root.GetLeft(), root))
 		}
 	}
 
@@ -287,52 +264,68 @@ func (tree *TreeSet[K]) deleteNode(root *Node[K], node *Node[K]) *Node[K] {
 		return root
 	}
 
-	root.height = root.getMaxSubtreeHeight() + 1
+	root.SetHeight(getMaxSubtreeHeight(root) + 1)
 	balance := getSubtreeBalance(root)
 
-	if balance > 1 && root.Left.getSubtreeBalance() >= 0 {
-		return root.rotateRight()
-	} else if balance > 1 && getSubtreeBalance(root.Left) < 0 {
-		root.Left = root.Left.rotateLeft()
-		return root.rotateRight()
-	} else if balance < -1 && getSubtreeBalance(root.Right) <= 0 {
-		return root.rotateLeft()
-	} else if balance < -1 && getSubtreeBalance(root.Right) > 0 {
-		root.Right = root.Right.rotateRight()
-		return root.rotateLeft()
+	if balance > 1 && getSubtreeBalance(root.GetLeft()) >= 0 {
+		return rotateRight(root)
+	} else if balance > 1 && getSubtreeBalance(root.GetLeft()) < 0 {
+		root.SetLeft(rotateLeft(root.GetLeft()))
+		return rotateRight(root)
+	} else if balance < -1 && getSubtreeBalance(root.GetRight()) <= 0 {
+		return rotateLeft(root)
+	} else if balance < -1 && getSubtreeBalance(root.GetRight()) > 0 {
+		root.SetRight(rotateRight(root.GetRight()))
+		return rotateLeft(root)
 	}
 
-	root.Parent = nil
+	root.SetParent(nil)
 	return root
 }
 
-func (tree *TreeSet[K]) Add(key K) {
-	node := &Node[K]{
+func AddKey[K Comparable](tree *Tree[K], key K) {
+	node := &KeyNode[K]{
 		height: 1,
-		Key:    key,
-		Left:   nil,
-		Right:  nil,
-		Parent: nil,
+		key:    key,
+		left:   nil,
+		right:  nil,
+		parent: nil,
 	}
 
 	tree.Root = tree.insertNode(tree.Root, node)
-	tree.Root.Parent = nil
+	tree.Root.SetParent(nil)
 }
 
-func (tree *TreeSet[K]) Find(key K) *Node[K] {
-	if tree.Root == nil || tree.Root.Key == key {
+func AddKeyValue[K Comparable, V any](tree *Tree[K], key K, value V) {
+	node := &KeyValueNode[K, V]{
+		KeyNode: KeyNode[K]{
+			key:    key,
+			height: 1,
+			left:   nil,
+			right:  nil,
+			parent: nil,
+		},
+		value: value,
+	}
+
+	tree.Root = tree.insertNode(tree.Root, node)
+	tree.Root.SetParent(nil)
+}
+
+func (tree *Tree[K]) Find(key K) TreeNode[K] {
+	if tree.Root == nil || tree.Root.GetKey() == key {
 		return tree.Root
 	}
 
 	node := tree.Root
 	for node != nil {
-		if node.Key == key {
+		if node.GetKey() == key {
 			return node
 		} else {
-			if key < node.Key {
-				node = node.Left
+			if key < node.GetKey() {
+				node = node.GetLeft()
 			} else {
-				node = node.Right
+				node = node.GetRight()
 			}
 		}
 	}
@@ -340,26 +333,26 @@ func (tree *TreeSet[K]) Find(key K) *Node[K] {
 	return nil
 }
 
-func (tree *TreeSet[K]) Contains(key K) bool {
+func (tree *Tree[K]) Contains(key K) bool {
 	return tree.Find(key) != nil
 }
 
-func (node *Node[K]) bfs(depthmap map[int][]K, depth int) {
+func bfs[K Comparable](node TreeNode[K], depthmap map[int][]K, depth int) {
 	_, present := depthmap[depth]
 	if !present {
 		depthmap[depth] = make([]K, 0, 10)
 	}
 
-	depthmap[depth] = append(depthmap[depth], node.Key)
-	if node.Left != nil {
-		node.Left.bfs(depthmap, depth+1)
+	depthmap[depth] = append(depthmap[depth], node.GetKey())
+	if node.GetLeft() != nil {
+		bfs(node.GetLeft(), depthmap, depth+1)
 	}
-	if node.Right != nil {
-		node.Right.bfs(depthmap, depth+1)
+	if node.GetRight() != nil {
+		bfs(node.GetRight(), depthmap, depth+1)
 	}
 }
 
-func (tree *TreeSet[K]) GetKeys(traversal int) []K {
+func (tree *Tree[K]) GetKeys(traversal int) []K {
 	keys := make([]K, 0)
 	if tree.Root == nil {
 		return keys
@@ -367,7 +360,7 @@ func (tree *TreeSet[K]) GetKeys(traversal int) []K {
 
 	if traversal == TreeWalkBFS {
 		_map := make(map[int][]K, 10)
-		tree.Root.bfs(_map, 0)
+		bfs(tree.Root, _map, 0)
 		for d := 0; d < len(_map); d++ {
 			for i := range _map[d] {
 				keys = append(keys, _map[d][i])
