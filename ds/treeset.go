@@ -9,16 +9,49 @@ const (
 
 // AVL tree implementation
 
-type Tree[K Comparable] struct {
-	Size uint32
-	Root TreeNode[K]
-}
-
-func NewTree[K Comparable]() *Tree[K] {
-	return &Tree[K]{
+func NewTreeSet[K Comparable]() *TreeSet[K] {
+	return &TreeSet[K]{
 		Size: 0,
 		Root: nil,
 	}
+}
+
+func NewTreeMap[K Comparable, V any]() *TreeMap[K, V] {
+	return &TreeMap[K, V]{
+		TreeSet: TreeSet[K]{
+			Size: 0,
+			Root: nil,
+		},
+	}
+}
+
+func (tree *TreeSet[K]) AddItem(key K) {
+	node := &KeyNode[K]{
+		height: 1,
+		key:    key,
+		left:   nil,
+		right:  nil,
+		parent: nil,
+	}
+
+	tree.Root = tree.insertNode(tree.Root, node)
+	tree.Root.SetParent(nil)
+}
+
+func (tm *TreeMap[K, V]) AddItem(key K, value V) {
+	node := &KeyValueNode[K, V]{
+		KeyNode: KeyNode[K]{
+			height: 1,
+			key:    key,
+			left:   nil,
+			right:  nil,
+			parent: nil,
+		},
+		value: value,
+	}
+
+	tm.Root = tm.insertNode(tm.Root, node)
+	tm.Root.SetParent(nil)
 }
 
 func getMaxSubtreeHeight[K Comparable](node TreeNode[K]) int {
@@ -70,7 +103,7 @@ func getSubtreeMax[K Comparable](node TreeNode[K]) TreeNode[K] {
 	return n
 }
 
-func (tree *Tree[K]) walkKeys(n TreeNode[K], elements []K, order int) []K {
+func (tree *TreeSet[K]) walkKeys(n TreeNode[K], elements []K, order int) []K {
 	if order == TreeWalkInOrder {
 		if n.GetLeft() != nil {
 			elements = tree.walkKeys(n.GetLeft(), elements, order)
@@ -100,7 +133,7 @@ func (tree *Tree[K]) walkKeys(n TreeNode[K], elements []K, order int) []K {
 	return elements
 }
 
-func (tree *Tree[K]) Next(n TreeNode[K]) TreeNode[K] {
+func (tree *TreeSet[K]) Next(n TreeNode[K]) TreeNode[K] {
 	if n.GetRight() != nil {
 		return getSubtreeMin(n.GetRight())
 	}
@@ -114,7 +147,7 @@ func (tree *Tree[K]) Next(n TreeNode[K]) TreeNode[K] {
 	return parent
 }
 
-func (tree *Tree[K]) Prev(n TreeNode[K]) TreeNode[K] {
+func (tree *TreeSet[K]) Prev(n TreeNode[K]) TreeNode[K] {
 	if n.GetLeft() != nil {
 		return getSubtreeMax(n.GetLeft())
 	}
@@ -128,14 +161,14 @@ func (tree *Tree[K]) Prev(n TreeNode[K]) TreeNode[K] {
 	return parent
 }
 
-func (tree *Tree[K]) Min() TreeNode[K] {
+func (tree *TreeSet[K]) Min() TreeNode[K] {
 	if tree.Root == nil {
 		return nil
 	}
 	return getSubtreeMin(tree.Root)
 }
 
-func (tree *Tree[K]) Max() TreeNode[K] {
+func (tree *TreeSet[K]) Max() TreeNode[K] {
 	if tree.Root == nil {
 		return nil
 	}
@@ -180,7 +213,7 @@ func replaceNode[K Comparable](old TreeNode[K], new TreeNode[K]) {
 	old.SetParent(new.GetParent())
 }
 
-func (tree *Tree[K]) insertNode(root TreeNode[K], node TreeNode[K]) TreeNode[K] {
+func (tree *TreeSet[K]) insertNode(root TreeNode[K], node TreeNode[K]) TreeNode[K] {
 	if root == nil {
 		root = node
 		tree.Size += 1
@@ -233,7 +266,7 @@ func (tree *Tree[K]) insertNode(root TreeNode[K], node TreeNode[K]) TreeNode[K] 
 	return root
 }
 
-func (tree *Tree[K]) deleteNode(root TreeNode[K], node TreeNode[K]) TreeNode[K] {
+func (tree *TreeSet[K]) deleteNode(root TreeNode[K], node TreeNode[K]) TreeNode[K] {
 	if root == nil {
 		return root
 	}
@@ -283,58 +316,33 @@ func (tree *Tree[K]) deleteNode(root TreeNode[K], node TreeNode[K]) TreeNode[K] 
 	return root
 }
 
-func AddKey[K Comparable](tree *Tree[K], key K) {
-	node := &KeyNode[K]{
-		height: 1,
-		key:    key,
-		left:   nil,
-		right:  nil,
-		parent: nil,
-	}
-
-	tree.Root = tree.insertNode(tree.Root, node)
-	tree.Root.SetParent(nil)
-}
-
-func AddKeyValue[K Comparable, V any](tree *Tree[K], key K, value V) {
-	node := &KeyValueNode[K, V]{
-		KeyNode: KeyNode[K]{
-			key:    key,
-			height: 1,
-			left:   nil,
-			right:  nil,
-			parent: nil,
-		},
-		value: value,
-	}
-
-	tree.Root = tree.insertNode(tree.Root, node)
-	tree.Root.SetParent(nil)
-}
-
-func (tree *Tree[K]) Find(key K) TreeNode[K] {
-	if tree.Root == nil || tree.Root.GetKey() == key {
-		return tree.Root
-	}
-
+func (tree *TreeSet[K]) find(key K) TreeNode[K] {
 	node := tree.Root
 	for node != nil {
 		if node.GetKey() == key {
-			return node
+			break
+		}
+
+		if key < node.GetKey() {
+			node = node.GetLeft()
 		} else {
-			if key < node.GetKey() {
-				node = node.GetLeft()
-			} else {
-				node = node.GetRight()
-			}
+			node = node.GetRight()
 		}
 	}
 
-	return nil
+	return node
 }
 
-func (tree *Tree[K]) Contains(key K) bool {
-	return tree.Find(key) != nil
+func (tree *TreeSet[K]) Find(key K) *KeyNode[K] {
+	return tree.find(key).(*KeyNode[K])
+}
+
+func (tm *TreeMap[K, V]) Find(key K) *KeyValueNode[K, V] {
+	return tm.find(key).(*KeyValueNode[K, V])
+}
+
+func (tree *TreeSet[K]) Contains(key K) bool {
+	return tree.find(key) != nil
 }
 
 func bfs[K Comparable](node TreeNode[K], depthmap map[int][]K, depth int) {
@@ -352,7 +360,7 @@ func bfs[K Comparable](node TreeNode[K], depthmap map[int][]K, depth int) {
 	}
 }
 
-func (tree *Tree[K]) GetKeys(traversal int) []K {
+func (tree *TreeSet[K]) GetKeys(traversal int) []K {
 	keys := make([]K, 0)
 	if tree.Root == nil {
 		return keys

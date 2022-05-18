@@ -5,10 +5,10 @@ import (
 	"testing"
 )
 
-func getTreeSetInOrder() *ds.Tree[int] {
-	tree := ds.NewTree[int]()
+func getTreeSetInOrder() *ds.TreeSet[int] {
+	tree := ds.NewTreeSet[int]()
 	for _, v := range keys {
-		ds.AddKey(tree, v)
+		tree.AddItem(v)
 	}
 	return tree
 }

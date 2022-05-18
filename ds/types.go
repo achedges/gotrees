@@ -20,6 +20,15 @@ type Comparable interface {
 	Integer | Float | ~string
 }
 
+type TreeSet[K Comparable] struct {
+	Size uint32
+	Root TreeNode[K]
+}
+
+type TreeMap[K Comparable, V any] struct {
+	TreeSet[K]
+}
+
 type TreeNode[K Comparable] interface {
 	GetKey() K
 	SetKey(key K)

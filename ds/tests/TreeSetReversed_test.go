@@ -5,11 +5,11 @@ import (
 	"testing"
 )
 
-func getTreeSetReversed() *ds.Tree[int] {
-	tree := ds.NewTree[int]()
+func getTreeSetReversed() *ds.TreeSet[int] {
+	tree := ds.NewTreeSet[int]()
 	n := len(keys)
 	for i := range keys {
-		ds.AddKey(tree, keys[n-1-i])
+		tree.AddItem(keys[n-1-i])
 	}
 	return tree
 }
