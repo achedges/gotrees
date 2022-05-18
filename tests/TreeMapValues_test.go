@@ -1,8 +1,8 @@
 package tests
 
 import (
-	"localutils/ds"
 	"testing"
+	"trees"
 )
 
 func fail(t *testing.T, node int) {
@@ -18,7 +18,7 @@ func TestTreeMapKeyValuePairs(t *testing.T) {
 		4: "D",
 	}
 
-	tree := ds.NewTreeMap[int, string]()
+	tree := trees.NewTreeMap[int, string]()
 	for k, v := range testValues {
 		tree.AddItem(k, v)
 	}

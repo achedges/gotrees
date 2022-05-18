@@ -1,12 +1,12 @@
 package tests
 
 import (
-	"localutils/ds"
 	"testing"
+	"trees"
 )
 
-func getTreeSetReversed() *ds.TreeSet[int] {
-	tree := ds.NewTreeSet[int]()
+func getTreeSetReversed() *trees.TreeSet[int] {
+	tree := trees.NewTreeSet[int]()
 	n := len(keys)
 	for i := range keys {
 		tree.AddItem(keys[n-1-i])

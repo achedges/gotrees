@@ -1,12 +1,12 @@
 package tests
 
 import (
-	"localutils/ds"
 	"testing"
+	"trees"
 )
 
-func getTreeSetInOrder() *ds.TreeSet[int] {
-	tree := ds.NewTreeSet[int]()
+func getTreeSetInOrder() *trees.TreeSet[int] {
+	tree := trees.NewTreeSet[int]()
 	for _, v := range keys {
 		tree.AddItem(v)
 	}

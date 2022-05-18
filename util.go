@@ -1,4 +1,4 @@
-package ds
+package trees
 
 func Max[T Comparable](a, b T) T {
 	if a > b {

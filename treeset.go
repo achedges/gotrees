@@ -1,4 +1,4 @@
-package ds
+package trees
 
 const (
 	TreeWalkInOrder   = iota
@@ -38,7 +38,15 @@ func (tree *TreeSet[K]) AddItem(key K) {
 	tree.Root.SetParent(nil)
 }
 
-func (tm *TreeMap[K, V]) AddItem(key K, value V) {
+func (tree *TreeSet[K]) DeleteItem(key K) {
+	tree.deleteNode(tree.Find(key))
+}
+
+func (tree *TreeMap[K, V]) DeleteItem(key K) {
+	tree.deleteNode(tree.Find(key))
+}
+
+func (tree *TreeMap[K, V]) AddItem(key K, value V) {
 	node := &KeyValueNode[K, V]{
 		KeyNode: KeyNode[K]{
 			height: 1,
@@ -50,8 +58,8 @@ func (tm *TreeMap[K, V]) AddItem(key K, value V) {
 		value: value,
 	}
 
-	tm.Root = tm.insertNode(tm.Root, node)
-	tm.Root.SetParent(nil)
+	tree.Root = tree.insertNode(tree.Root, node)
+	tree.Root.SetParent(nil)
 }
 
 func getMaxSubtreeHeight[K Comparable](node TreeNode[K]) int {
@@ -66,25 +74,6 @@ func getMaxSubtreeHeight[K Comparable](node TreeNode[K]) int {
 	}
 
 	return Max(lh, rh)
-}
-
-func getSubtreeBalance[K Comparable](node TreeNode[K]) int {
-	if node == nil {
-		return 0
-	}
-
-	lh := 0
-	rh := 0
-
-	if node.GetLeft() != nil {
-		lh = node.GetLeft().GetHeight()
-	}
-
-	if node.GetRight() != nil {
-		rh = node.GetRight().GetHeight()
-	}
-
-	return lh - rh
 }
 
 func getSubtreeMin[K Comparable](node TreeNode[K]) TreeNode[K] {
@@ -266,54 +255,42 @@ func (tree *TreeSet[K]) insertNode(root TreeNode[K], node TreeNode[K]) TreeNode[
 	return root
 }
 
-func (tree *TreeSet[K]) deleteNode(root TreeNode[K], node TreeNode[K]) TreeNode[K] {
-	if root == nil {
-		return root
-	}
-
-	if node.GetKey() < root.GetKey() {
-		root.SetLeft(tree.deleteNode(root.GetLeft(), node))
-	} else if node.GetKey() > root.GetKey() {
-		root.SetRight(tree.deleteNode(root.GetRight(), node))
+func (tree *TreeSet[K]) transplantNode(old TreeNode[K], new TreeNode[K]) {
+	if old.GetParent() == nil {
+		tree.Root = new
+	} else if old.GetParent().GetLeft() != nil && old.GetKey() == old.GetParent().GetLeft().GetKey() {
+		old.GetParent().SetLeft(new)
 	} else {
-		if root.GetLeft() == nil || root.GetRight() == nil {
-			var tmp TreeNode[K]
-			if root.GetLeft() == nil {
-				tmp = root.GetRight()
-			} else {
-				tmp = root.GetLeft()
-			}
+		old.GetParent().SetRight(new)
+	}
 
-			if tmp != nil {
-				root = tmp
-			}
-		} else {
-			replaceNode(root, getSubtreeMax(root.GetLeft()))
-			root.SetLeft(tree.deleteNode(root.GetLeft(), root))
+	if new != nil {
+		new.SetParent(old.GetParent())
+	}
+}
+
+func (tree *TreeSet[K]) deleteNode(node TreeNode[K]) {
+	if node == nil {
+		return
+	}
+
+	if node.GetLeft() == nil {
+		tree.transplantNode(node, node.GetRight())
+	} else if node.GetRight() == nil {
+		tree.transplantNode(node, node.GetLeft())
+	} else {
+		y := getSubtreeMin(node.GetRight())
+		if y.GetParent().GetKey() != node.GetKey() {
+			tree.transplantNode(y, y.GetRight())
+			y.SetRight(node.GetRight())
+			y.GetRight().SetParent(y)
 		}
+		tree.transplantNode(node, y)
+		y.SetLeft(node.GetLeft())
+		y.GetLeft().SetParent(y)
 	}
 
-	if root == nil {
-		return root
-	}
-
-	root.SetHeight(getMaxSubtreeHeight(root) + 1)
-	balance := getSubtreeBalance(root)
-
-	if balance > 1 && getSubtreeBalance(root.GetLeft()) >= 0 {
-		return rotateRight(root)
-	} else if balance > 1 && getSubtreeBalance(root.GetLeft()) < 0 {
-		root.SetLeft(rotateLeft(root.GetLeft()))
-		return rotateRight(root)
-	} else if balance < -1 && getSubtreeBalance(root.GetRight()) <= 0 {
-		return rotateLeft(root)
-	} else if balance < -1 && getSubtreeBalance(root.GetRight()) > 0 {
-		root.SetRight(rotateRight(root.GetRight()))
-		return rotateLeft(root)
-	}
-
-	root.SetParent(nil)
-	return root
+	tree.Size -= 1
 }
 
 func (tree *TreeSet[K]) find(key K) TreeNode[K] {
@@ -334,11 +311,21 @@ func (tree *TreeSet[K]) find(key K) TreeNode[K] {
 }
 
 func (tree *TreeSet[K]) Find(key K) *KeyNode[K] {
-	return tree.find(key).(*KeyNode[K])
+	node := tree.find(key)
+	if node == nil {
+		return nil
+	} else {
+		return node.(*KeyNode[K])
+	}
 }
 
-func (tm *TreeMap[K, V]) Find(key K) *KeyValueNode[K, V] {
-	return tm.find(key).(*KeyValueNode[K, V])
+func (tree *TreeMap[K, V]) Find(key K) *KeyValueNode[K, V] {
+	node := tree.find(key)
+	if node == nil {
+		return nil
+	} else {
+		return node.(*KeyValueNode[K, V])
+	}
 }
 
 func (tree *TreeSet[K]) Contains(key K) bool {

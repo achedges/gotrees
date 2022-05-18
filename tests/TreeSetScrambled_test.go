@@ -1,12 +1,12 @@
 package tests
 
 import (
-	"localutils/ds"
 	"testing"
+	"trees"
 )
 
-func getTreeSetScrambled() *ds.TreeSet[int] {
-	tree := ds.NewTreeSet[int]()
+func getTreeSetScrambled() *trees.TreeSet[int] {
+	tree := trees.NewTreeSet[int]()
 	insertionOrder := []int{0, 2, 1, 6, 4, 5, 3, 9, 7, 8}
 	for _, v := range insertionOrder {
 		tree.AddItem(keys[v])
