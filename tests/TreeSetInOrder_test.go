@@ -5,8 +5,8 @@ import (
 	"trees"
 )
 
-func getTreeSetInOrder() *trees.TreeSet[int] {
-	tree := trees.NewTreeSet[int]()
+func getTreeSetInOrder() *gotrees.TreeSet[int] {
+	tree := gotrees.NewTreeSet[int]()
 	for _, v := range keys {
 		tree.AddItem(v)
 	}

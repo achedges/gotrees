@@ -5,8 +5,8 @@ import (
 	"trees"
 )
 
-func getTreeSetScrambled() *trees.TreeSet[int] {
-	tree := trees.NewTreeSet[int]()
+func getTreeSetScrambled() *gotrees.TreeSet[int] {
+	tree := gotrees.NewTreeSet[int]()
 	insertionOrder := []int{0, 2, 1, 6, 4, 5, 3, 9, 7, 8}
 	for _, v := range insertionOrder {
 		tree.AddItem(keys[v])

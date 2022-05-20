@@ -18,7 +18,7 @@ func TestTreeMapKeyValuePairs(t *testing.T) {
 		4: "D",
 	}
 
-	tree := trees.NewTreeMap[int, string]()
+	tree := gotrees.NewTreeMap[int, string]()
 	for k, v := range testValues {
 		tree.AddItem(k, v)
 	}
@@ -33,5 +33,16 @@ func TestTreeMapKeyValuePairs(t *testing.T) {
 		if node.GetValue() != v {
 			fail(t, k)
 		}
+	}
+
+	node := tree.Min()
+	if node.GetKey() != 1 {
+		t.Errorf("Unexpected tree map min: %d", node.GetKey())
+		t.FailNow()
+	}
+
+	if node.GetValue() != "A" {
+		t.Errorf("Unexpected tree map min value: %s", node.GetValue())
+		t.FailNow()
 	}
 }

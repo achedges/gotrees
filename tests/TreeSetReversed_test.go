@@ -5,8 +5,8 @@ import (
 	"trees"
 )
 
-func getTreeSetReversed() *trees.TreeSet[int] {
-	tree := trees.NewTreeSet[int]()
+func getTreeSetReversed() *gotrees.TreeSet[int] {
+	tree := gotrees.NewTreeSet[int]()
 	n := len(keys)
 	for i := range keys {
 		tree.AddItem(keys[n-1-i])
