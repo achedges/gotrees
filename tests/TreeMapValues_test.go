@@ -1,48 +1,48 @@
 package tests
 
 import (
+	"gotrees"
 	"testing"
-	"trees"
 )
 
-func fail(t *testing.T, node int) {
-	t.Errorf("Incorrect value at node %d", node)
-	t.FailNow()
-}
-
-func TestTreeMapKeyValuePairs(t *testing.T) {
-	testValues := map[int]string{
-		1: "A",
-		2: "B",
-		3: "C",
-		4: "D",
-	}
-
+func TestTreeMapKeyValuePairs(test *testing.T) {
 	tree := gotrees.NewTreeMap[int, string]()
-	for k, v := range testValues {
+	for k, v := range testKeyValues {
 		tree.AddItem(k, v)
 	}
 
 	if tree.Size != 4 {
-		t.Error("Incorrect list size")
-		t.FailNow()
+		test.Error("Incorrect list size")
+		test.FailNow()
 	}
 
-	for k, v := range testValues {
+	for k, v := range testKeyValues {
 		node := tree.Find(k)
 		if node.GetValue() != v {
-			fail(t, k)
+			test.Errorf("Incorrect value at node %d", k)
+			test.FailNow()
 		}
 	}
 
-	node := tree.Min()
+	var node = tree.Min()
 	if node.GetKey() != 1 {
-		t.Errorf("Unexpected tree map min: %d", node.GetKey())
-		t.FailNow()
+		test.Errorf("Unexpected tree map min: %d", node.GetKey())
+		test.FailNow()
 	}
 
 	if node.GetValue() != "A" {
-		t.Errorf("Unexpected tree map min value: %s", node.GetValue())
-		t.FailNow()
+		test.Errorf("Unexpected tree map min value: %s", node.GetValue())
+		test.FailNow()
+	}
+
+	node = tree.Max()
+	if node.GetKey() != 4 {
+		test.Errorf("Unexpected tree map max: %d", node.GetKey())
+		test.FailNow()
+	}
+
+	if node.GetValue() != "D" {
+		test.Errorf("Unexpected tree map max value: %s", node.GetValue())
+		test.FailNow()
 	}
 }

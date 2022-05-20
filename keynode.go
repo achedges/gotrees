@@ -16,14 +16,6 @@ func (node *KeyNode[K]) SetKey(key K) {
 	node.key = key
 }
 
-func (node *KeyNode[K]) GetValue() any {
-	return node.key
-}
-
-func (node *KeyNode[K]) SetValue(_ any) {
-	return
-}
-
 func (node *KeyNode[K]) GetHeight() int {
 	return node.height
 }
