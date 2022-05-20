@@ -1,7 +1,7 @@
 package tests
 
 import (
-	"gotrees"
+	"github.com/achedges/gotrees"
 	"testing"
 )
 
