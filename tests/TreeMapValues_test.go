@@ -45,4 +45,10 @@ func TestTreeMapKeyValuePairs(test *testing.T) {
 		test.Errorf("Unexpected tree map max value: %s", node.GetValue())
 		test.FailNow()
 	}
+
+	shouldBeNil := tree.Find(0)
+	if shouldBeNil != nil {
+		test.Errorf("Unexpected value for absent key")
+		test.FailNow()
+	}
 }
