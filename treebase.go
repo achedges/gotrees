@@ -99,12 +99,13 @@ func rotateRight[K Comparable](node TreeNode[K]) TreeNode[K] {
 	return newroot
 }
 
-func replaceNode[K Comparable](old TreeNode[K], new TreeNode[K]) {
-	old.SetKey(new.GetKey())
-	old.SetHeight(new.GetHeight())
-	old.SetLeft(new.GetLeft())
-	old.SetRight(new.GetRight())
-	old.SetParent(new.GetParent())
+func replaceNode[K Comparable](old TreeNode[K], new TreeNode[K]) TreeNode[K] {
+	new.SetKey(old.GetKey())
+	new.SetHeight(old.GetHeight())
+	new.SetLeft(old.GetLeft())
+	new.SetRight(old.GetRight())
+	new.SetParent(old.GetParent())
+	return new
 }
 
 func (tree *TreeSet[K]) insertNode(root TreeNode[K], node TreeNode[K]) TreeNode[K] {
@@ -121,7 +122,7 @@ func (tree *TreeSet[K]) insertNode(root TreeNode[K], node TreeNode[K]) TreeNode[
 		root.SetRight(tree.insertNode(root.GetRight(), node))
 		root.GetRight().SetParent(root)
 	} else {
-		replaceNode(root, node)
+		root = replaceNode(root, node)
 	}
 
 	var lheight = 0

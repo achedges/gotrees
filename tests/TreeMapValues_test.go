@@ -51,4 +51,11 @@ func TestTreeMapKeyValuePairs(test *testing.T) {
 		test.Errorf("Unexpected value for absent key")
 		test.FailNow()
 	}
+
+	tree.AddItem(1, "E")
+	node = tree.Find(1)
+	if node.GetValue() != "E" {
+		test.Errorf("Unexpected value after replacement")
+		test.FailNow()
+	}
 }
