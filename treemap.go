@@ -34,12 +34,10 @@ func (tree *TreeMap[K, V]) DeleteItem(key K) {
 }
 
 func (tree *TreeMap[K, V]) Find(key K) *KeyValueNode[K, V] {
-	node := tree.find(key)
-	if node == nil {
-		return nil
-	} else {
+	if node := tree.find(key); node != nil {
 		return node.(*KeyValueNode[K, V])
 	}
+	return nil
 }
 
 func (tree *TreeMap[K, V]) Contains(key K) bool {
@@ -47,29 +45,31 @@ func (tree *TreeMap[K, V]) Contains(key K) bool {
 }
 
 func (tree *TreeMap[K, V]) Min() *KeyValueNode[K, V] {
-	return tree.TreeSet.Min().(*KeyValueNode[K, V])
+	if minnode := tree.TreeSet.Min(); minnode != nil {
+		return minnode.(*KeyValueNode[K, V])
+	}
+	return nil
 }
 
 func (tree *TreeMap[K, V]) Max() *KeyValueNode[K, V] {
-	return tree.TreeSet.Max().(*KeyValueNode[K, V])
+	if maxnode := tree.TreeSet.Max(); maxnode != nil {
+		return maxnode.(*KeyValueNode[K, V])
+	}
+	return nil
 }
 
 func (tree *TreeMap[K, V]) Next(n TreeNode[K]) *KeyValueNode[K, V] {
-	next := tree.TreeSet.Next(n)
-	if next != nil {
+	if next := tree.TreeSet.Next(n); next != nil {
 		return next.(*KeyValueNode[K, V])
-	} else {
-		return nil
 	}
+	return nil
 }
 
 func (tree *TreeMap[K, V]) Prev(n TreeNode[K]) *KeyValueNode[K, V] {
-	prev := tree.TreeSet.Prev(n)
-	if prev != nil {
+	if prev := tree.TreeSet.Prev(n); prev != nil {
 		return prev.(*KeyValueNode[K, V])
-	} else {
-		return nil
 	}
+	return nil
 }
 
 func (tree *TreeMap[K, V]) GetKeys(traversal int) []K {
