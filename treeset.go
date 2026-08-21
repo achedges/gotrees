@@ -1,11 +1,13 @@
 package gotrees
 
-type TreeSet[K Comparable] struct {
+import "cmp"
+
+type TreeSet[K cmp.Ordered] struct {
 	Size uint32
 	Root TreeNode[K]
 }
 
-func NewTreeSet[K Comparable]() *TreeSet[K] {
+func NewTreeSet[K cmp.Ordered]() *TreeSet[K] {
 	return &TreeSet[K]{
 		Size: 0,
 		Root: nil,
@@ -33,9 +35,8 @@ func (tree *TreeSet[K]) Find(key K) *KeyNode[K] {
 	node := tree.find(key)
 	if node == nil {
 		return nil
-	} else {
-		return node.(*KeyNode[K])
 	}
+	return node.(*KeyNode[K])
 }
 
 func (tree *TreeSet[K]) Contains(key K) bool {

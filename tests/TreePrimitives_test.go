@@ -120,9 +120,9 @@ func TestTreeSetDeleteInnerNode(t *testing.T) {
 func TestTreeSetDeleteMinNode(t *testing.T) {
 	tree := getTreeSetInOrder()
 	tree.DeleteItem(tree.Min().GetKey())
-	min := tree.Min().GetKey()
-	if min != 1 {
-		t.Errorf("Unexpected minimum node after delete: %d", min)
+	minNode := tree.Min().GetKey()
+	if minNode != 1 {
+		t.Errorf("Unexpected minimum node after delete: %d", minNode)
 		t.FailNow()
 	}
 }
@@ -130,9 +130,9 @@ func TestTreeSetDeleteMinNode(t *testing.T) {
 func TestTreeSetDeleteMaxNode(t *testing.T) {
 	tree := getTreeSetInOrder()
 	tree.DeleteItem(tree.Max().GetKey())
-	max := tree.Max().GetKey()
-	if max != 8 {
-		t.Errorf("Unexpected maximum node after delete: %d", max)
+	maxNode := tree.Max().GetKey()
+	if maxNode != 8 {
+		t.Errorf("Unexpected maximum node after delete: %d", maxNode)
 		t.FailNow()
 	}
 }

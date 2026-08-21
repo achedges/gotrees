@@ -1,8 +1,9 @@
 package tests
 
 import (
-	"github.com/achedges/gotrees"
 	"testing"
+
+	"github.com/achedges/gotrees"
 )
 
 func TestTreeMapKeyValuePairs(test *testing.T) {

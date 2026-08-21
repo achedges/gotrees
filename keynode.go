@@ -1,6 +1,8 @@
 package gotrees
 
-type KeyNode[K Comparable] struct {
+import "cmp"
+
+type KeyNode[K cmp.Ordered] struct {
 	key    K
 	height int
 	left   TreeNode[K]

@@ -1,8 +1,10 @@
 package tests
 
 import (
-	"github.com/achedges/gotrees"
+	"cmp"
 	"testing"
+
+	"github.com/achedges/gotrees"
 )
 
 const listSize uint32 = 10
@@ -41,7 +43,7 @@ func getTreeSetScrambled() *gotrees.TreeSet[int] {
 	return tree
 }
 
-func traversalTestHelper[K gotrees.Comparable](test *testing.T, tree *gotrees.TreeSet[K], preOrderKeys []K, postOrderKeys []K, bfsKeys []K) {
+func traversalTestHelper[K cmp.Ordered](test *testing.T, tree *gotrees.TreeSet[K], preOrderKeys []K, postOrderKeys []K, bfsKeys []K) {
 	var i uint32 = 0
 	var treeKeys = tree.GetKeys(gotrees.TreeWalkInOrder)
 

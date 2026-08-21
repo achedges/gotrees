@@ -1,15 +1,17 @@
 package gotrees
 
+import "cmp"
+
 const (
-	TreeWalkInOrder   = iota
-	TreeWalkPreOrder  = iota
-	TreeWalkPostOrder = iota
-	TreeWalkBFS       = iota
+	TreeWalkInOrder = iota
+	TreeWalkPreOrder
+	TreeWalkPostOrder
+	TreeWalkBFS
 )
 
 // AVL tree implementation
 
-func getMaxSubtreeHeight[K Comparable](node TreeNode[K]) int {
+func getMaxSubtreeHeight[K cmp.Ordered](node TreeNode[K]) int {
 	lh := 0
 	rh := 0
 	if node.GetLeft() != nil {
@@ -23,7 +25,7 @@ func getMaxSubtreeHeight[K Comparable](node TreeNode[K]) int {
 	return Max(lh, rh)
 }
 
-func getSubtreeMin[K Comparable](node TreeNode[K]) TreeNode[K] {
+func getSubtreeMin[K cmp.Ordered](node TreeNode[K]) TreeNode[K] {
 	n := node
 	for n.GetLeft() != nil {
 		n = n.GetLeft()
@@ -31,7 +33,7 @@ func getSubtreeMin[K Comparable](node TreeNode[K]) TreeNode[K] {
 	return n
 }
 
-func getSubtreeMax[K Comparable](node TreeNode[K]) TreeNode[K] {
+func getSubtreeMax[K cmp.Ordered](node TreeNode[K]) TreeNode[K] {
 	n := node
 	for n.GetRight() != nil {
 		n = n.GetRight()
@@ -69,7 +71,7 @@ func (tree *TreeSet[K]) walkKeys(n TreeNode[K], elements []K, order int) []K {
 	return elements
 }
 
-func rotateLeft[K Comparable](node TreeNode[K]) TreeNode[K] {
+func rotateLeft[K cmp.Ordered](node TreeNode[K]) TreeNode[K] {
 	newroot := node.GetRight()
 	tmp := newroot.GetLeft()
 	newroot.SetLeft(node)
@@ -84,7 +86,7 @@ func rotateLeft[K Comparable](node TreeNode[K]) TreeNode[K] {
 	return newroot
 }
 
-func rotateRight[K Comparable](node TreeNode[K]) TreeNode[K] {
+func rotateRight[K cmp.Ordered](node TreeNode[K]) TreeNode[K] {
 	newroot := node.GetLeft()
 	tmp := newroot.GetRight()
 	newroot.SetRight(node)
@@ -99,7 +101,7 @@ func rotateRight[K Comparable](node TreeNode[K]) TreeNode[K] {
 	return newroot
 }
 
-func replaceNode[K Comparable](old TreeNode[K], new TreeNode[K]) TreeNode[K] {
+func replaceNode[K cmp.Ordered](old TreeNode[K], new TreeNode[K]) TreeNode[K] {
 	new.SetKey(old.GetKey())
 	new.SetHeight(old.GetHeight())
 	new.SetLeft(old.GetLeft())
@@ -216,7 +218,7 @@ func (tree *TreeSet[K]) find(key K) TreeNode[K] {
 	return node
 }
 
-func bfs[K Comparable](node TreeNode[K], depthmap map[int][]K, depth int) {
+func bfs[K cmp.Ordered](node TreeNode[K], depthmap map[int][]K, depth int) {
 	_, present := depthmap[depth]
 	if !present {
 		depthmap[depth] = make([]K, 0, 10)

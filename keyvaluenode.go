@@ -1,6 +1,8 @@
 package gotrees
 
-type KeyValueNode[K Comparable, V any] struct {
+import "cmp"
+
+type KeyValueNode[K cmp.Ordered, V any] struct {
 	KeyNode[K]
 	value V
 }

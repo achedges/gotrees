@@ -1,6 +1,8 @@
 package gotrees
 
-type TreeNode[K Comparable] interface {
+import "cmp"
+
+type TreeNode[K cmp.Ordered] interface {
 	GetKey() K
 	SetKey(key K)
 	GetHeight() int

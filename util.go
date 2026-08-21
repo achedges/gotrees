@@ -1,9 +1,10 @@
 package gotrees
 
-func Max[T Comparable](a, b T) T {
+import "cmp"
+
+func Max[T cmp.Ordered](a, b T) T {
 	if a > b {
 		return a
-	} else {
-		return b
 	}
+	return b
 }

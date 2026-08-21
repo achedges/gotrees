@@ -1,10 +1,12 @@
 package gotrees
 
-type TreeMap[K Comparable, V any] struct {
+import "cmp"
+
+type TreeMap[K cmp.Ordered, V any] struct {
 	TreeSet[K]
 }
 
-func NewTreeMap[K Comparable, V any]() *TreeMap[K, V] {
+func NewTreeMap[K cmp.Ordered, V any]() *TreeMap[K, V] {
 	return &TreeMap[K, V]{
 		TreeSet: TreeSet[K]{
 			Size: 0,
