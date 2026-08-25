@@ -101,18 +101,18 @@ func bfs[K cmp.Ordered](node treeNode[K], depthmap map[int][]K, depth int) {
 	}
 }
 
-func (tree *TreeSet[K]) insertNode(root treeNode[K], node treeNode[K]) treeNode[K] {
+func (t *TreeSet[K]) insertNode(root treeNode[K], node treeNode[K]) treeNode[K] {
 	if root == nil {
 		root = node
-		tree.size += 1
+		t.size += 1
 		return root
 	}
 
 	if node.getKey() < root.getKey() {
-		root.setLeft(tree.insertNode(root.getLeft(), node))
+		root.setLeft(t.insertNode(root.getLeft(), node))
 		root.getLeft().setParent(root)
 	} else if node.getKey() > root.getKey() {
-		root.setRight(tree.insertNode(root.getRight(), node))
+		root.setRight(t.insertNode(root.getRight(), node))
 		root.getRight().setParent(root)
 	} else {
 		root = replaceNode(root, node)
@@ -154,9 +154,9 @@ func (tree *TreeSet[K]) insertNode(root treeNode[K], node treeNode[K]) treeNode[
 	return root
 }
 
-func (tree *TreeSet[K]) transplantNode(old treeNode[K], new treeNode[K]) {
+func (t *TreeSet[K]) transplantNode(old treeNode[K], new treeNode[K]) {
 	if old.getParent() == nil {
-		tree.root = new
+		t.root = new
 	} else if old.getParent().getLeft() != nil && old.getKey() == old.getParent().getLeft().getKey() {
 		old.getParent().setLeft(new)
 	} else {
@@ -168,8 +168,8 @@ func (tree *TreeSet[K]) transplantNode(old treeNode[K], new treeNode[K]) {
 	}
 }
 
-func (tree *TreeSet[K]) find(key K) treeNode[K] {
-	node := tree.root
+func (t *TreeSet[K]) find(key K) treeNode[K] {
+	node := t.root
 	for node != nil {
 		if node.getKey() == key {
 			break
@@ -185,58 +185,58 @@ func (tree *TreeSet[K]) find(key K) treeNode[K] {
 	return node
 }
 
-func (tree *TreeSet[K]) deleteNode(key K) {
-	node := tree.find(key)
+func (t *TreeSet[K]) deleteNode(key K) {
+	node := t.find(key)
 	if node == nil {
 		return
 	}
 
 	if node.getLeft() == nil {
-		tree.transplantNode(node, node.getRight())
+		t.transplantNode(node, node.getRight())
 	} else if node.getRight() == nil {
-		tree.transplantNode(node, node.getLeft())
+		t.transplantNode(node, node.getLeft())
 	} else {
 		y := getSubtreeMin(node.getRight())
 		if y.getParent().getKey() != node.getKey() {
-			tree.transplantNode(y, y.getRight())
+			t.transplantNode(y, y.getRight())
 			y.setRight(node.getRight())
 			y.getRight().setParent(y)
 		}
-		tree.transplantNode(node, y)
+		t.transplantNode(node, y)
 		y.setLeft(node.getLeft())
 		y.getLeft().setParent(y)
 	}
 
-	tree.size -= 1
+	t.size -= 1
 }
 
-func (tree *TreeSet[K]) walkKeys(n treeNode[K], elements []K, order int) []K {
+func (t *TreeSet[K]) walkKeys(n treeNode[K], elements []K, order int) []K {
 	if n == nil {
 		return elements
 	}
 
 	if order == TreeWalkInOrder {
 		if n.getLeft() != nil {
-			elements = tree.walkKeys(n.getLeft(), elements, order)
+			elements = t.walkKeys(n.getLeft(), elements, order)
 		}
 		elements = append(elements, n.getKey())
 		if n.getRight() != nil {
-			elements = tree.walkKeys(n.getRight(), elements, order)
+			elements = t.walkKeys(n.getRight(), elements, order)
 		}
 	} else if order == TreeWalkPreOrder {
 		elements = append(elements, n.getKey())
 		if n.getLeft() != nil {
-			elements = tree.walkKeys(n.getLeft(), elements, order)
+			elements = t.walkKeys(n.getLeft(), elements, order)
 		}
 		if n.getRight() != nil {
-			elements = tree.walkKeys(n.getRight(), elements, order)
+			elements = t.walkKeys(n.getRight(), elements, order)
 		}
 	} else if order == TreeWalkPostOrder {
 		if n.getLeft() != nil {
-			elements = tree.walkKeys(n.getLeft(), elements, order)
+			elements = t.walkKeys(n.getLeft(), elements, order)
 		}
 		if n.getRight() != nil {
-			elements = tree.walkKeys(n.getRight(), elements, order)
+			elements = t.walkKeys(n.getRight(), elements, order)
 		}
 		elements = append(elements, n.getKey())
 	}
