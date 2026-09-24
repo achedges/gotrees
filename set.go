@@ -33,7 +33,7 @@ func (t *TreeSet[K]) Contains(key K) bool {
 	return t.find(key) != nil
 }
 
-func (t *TreeSet[K]) Min() (K, bool){
+func (t *TreeSet[K]) Min() (K, bool) {
 	if t.root == nil {
 		var empty K
 		return empty, false
@@ -91,7 +91,7 @@ func (t *TreeSet[K]) Prev(key K) (K, bool) {
 	}
 
 	if n.getLeft() != nil {
-		subtreeMin := getSubtreeMin(n.getLeft())
+		subtreeMin := getSubtreeMax(n.getLeft())
 		if subtreeMin != nil {
 			retval = subtreeMin.getKey()
 			found = true
