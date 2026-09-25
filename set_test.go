@@ -71,19 +71,37 @@ func TestTreeSet_Next_Prev(t *testing.T) {
 		set.Add(i)
 	}
 
-	nextkey, found := set.Next(5)
-	assertions.True(found, t)
-	assertions.EqualInts(6, nextkey, t)
+	var nextkey int
 
-	prevkey, found := set.Prev(5)
-	assertions.True(found, t)
-	assertions.EqualInts(4, prevkey, t)
+	i, found := set.Min()
+	for found {
+		nextkey, found = set.Next(i)
+		if !found {
+			break
+		}
+		assertions.EqualInts(i+1, nextkey, t)
+		i += 1
+	}
 
 	_, found = set.Next(9)
 	assertions.False(found, t)
+	assertions.EqualInts(9, i, t)
+
+	var prevkey int
+
+	i, found = set.Max()
+	for found {
+		prevkey, found = set.Prev(i)
+		if !found {
+			break
+		}
+		assertions.EqualInts(i-1, prevkey, t)
+		i -= 1
+	}
 
 	_, found = set.Prev(0)
 	assertions.False(found, t)
+	assertions.EqualInts(0, i, t)
 }
 
 func TestTreeSet_GetKeys(t *testing.T) {

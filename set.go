@@ -91,9 +91,9 @@ func (t *TreeSet[K]) Prev(key K) (K, bool) {
 	}
 
 	if n.getLeft() != nil {
-		subtreeMin := getSubtreeMax(n.getLeft())
-		if subtreeMin != nil {
-			retval = subtreeMin.getKey()
+		subtreeMax := getSubtreeMax(n.getLeft())
+		if subtreeMax != nil {
+			retval = subtreeMax.getKey()
 			found = true
 		}
 	} else {
